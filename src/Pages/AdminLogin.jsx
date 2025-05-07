@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   FormControl,
@@ -6,6 +6,7 @@ import {
   Typography,
   Button,
   Paper,
+  CircularProgress,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -15,6 +16,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { baseURL } from "../Api/Config";
 const AdminLogin = () => {
   const navigate = useNavigate();
+  const [loading, setloading] = useState(false);
   const { values, errors, handleSubmit, handleBlur, handleChange, touched } =
     useFormik({
       initialValues: {
@@ -29,17 +31,17 @@ const AdminLogin = () => {
         password: Yup.string().required("Password is required"),
       }),
       onSubmit: async (values) => {
-        const data = await axios.post(
-         `${baseURL}/auth/admin_login`,
-          {
-            email: values.email,
-            password: values.password,
-          }
-        );
+        setloading(true);
+        const data = await axios.post(`${baseURL}/auth/admin_login`, {
+          email: values.email,
+          password: values.password,
+        });
         if (data?.data?.success) {
-          toast.success("User Registred Sucessfully !");
+          setloading(false);
+          toast.success("Admin login Sucessfully !");
           navigate("/home");
         } else {
+          setloading(false);
           toast.error(data?.data?.message);
         }
       },
@@ -122,6 +124,7 @@ const AdminLogin = () => {
         </FormControl>
 
         <Button
+          disabled={loading}
           onClick={handleSubmit}
           variant="contained"
           sx={{
@@ -132,9 +135,10 @@ const AdminLogin = () => {
             width: "40%",
             textAlign: "center",
             m: "auto",
+            height: "50px",
           }}
         >
-          Login
+          {loading ? <CircularProgress /> : <Typography>Login</Typography>}
         </Button>
 
         <Box

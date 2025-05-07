@@ -14,14 +14,12 @@ export const VerifiyEmail = () => {
   const SendVerifiyEmail = async () => {
     setloading(true);
     try {
-      const { data } = await axios.post(
-        `${baseURL}/auth/verifiyemail`,
-        {
-          email: location?.state?.email,
-          Verification_code: otp,
-        }
-      );
+      const { data } = await axios.post(`${baseURL}/auth/verifiyemail`, {
+        email: location?.state?.email,
+        Verification_code: otp,
+      });
       if (data?.success) {
+        console.log(data?.data, "data?.data");
         setloading(false);
         toast.success("User verified successfully!");
         localStorage.setItem("authInfo", JSON.stringify(data?.data));
